@@ -49,6 +49,7 @@ setup(
         'plone.api',
         'plone.protect>=3.0.0',  # plone4.csrffixes will include this
         'setuptools',
+        'zope.index',
     ],
     extras_require={
         'test': [

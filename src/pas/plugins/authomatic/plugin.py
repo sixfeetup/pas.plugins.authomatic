@@ -2,6 +2,7 @@
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
 from BTrees.IOBTree import IOBTree
+from BTrees.OIBTree import OIBTree
 from BTrees.OOBTree import OOBTree
 from operator import itemgetter
 from pas.plugins.authomatic.interfaces import IAuthomaticPlugin
@@ -12,7 +13,7 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PluggableAuthService.interfaces import plugins as pas_interfaces
 from Products.PluggableAuthService.interfaces.authservice import _noroles
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
-from zope.index.textindex import TextIndex
+from zope.index.text.textindex import TextIndex
 from zope.interface import implementer
 
 import logging
@@ -62,6 +63,7 @@ class AuthomaticPlugin(BasePlugin):
         self.title = title
         self.plugin_caching = True
         self._init_trees()
+        self._init_index()
 
     def _init_trees(self):
         # (provider_name, provider_userid) -> userid
@@ -70,8 +72,10 @@ class AuthomaticPlugin(BasePlugin):
         # userid -> userdata
         self._useridentities_by_userid = OOBTree()
 
+    def _init_index(self):
         # indexerid -> userid
         self._userid_by_indexerid = IOBTree()
+        self._indexerid_by_userid = OIBTree()
         self._textindex = TextIndex
 
     def _provider_id(self, result):
@@ -82,6 +86,13 @@ class AuthomaticPlugin(BasePlugin):
         if not result.provider.name:
             raise ValueError('Invalid: Empty provider.name')
         return (result.provider.name, result.user.id)
+
+    def _index(self, userid, identities):
+        docid = 
+        self._index.indexdoc()
+
+    def _find(self, searchterm):
+        pass
 
     @security.private
     def lookup_identities(self, result):
