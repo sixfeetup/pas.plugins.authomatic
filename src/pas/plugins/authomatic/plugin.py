@@ -87,12 +87,31 @@ class AuthomaticPlugin(BasePlugin):
             raise ValueError('Invalid: Empty provider.name')
         return (result.provider.name, result.user.id)
 
-    def _index(self, userid, identities):
-        docid = 
-        self._index.indexdoc()
+    def _index(self, identities):
+        docid = self._indexerid_by_userid.get(identities.userid, None)
+        if docid is None:
+            # create new docid
+            try:
+                docid = self._userid_by_indexerid.maxKey() + 1
+            except ValueError:
+                docid = 0
+            self._indexerid_by_userid[identities.userid] = docid
+            self._userid_by_indexerid[docid] = identities.userid
+        data = ' '.join([
+            # possible enhancement:
+            # fields to index could be configurable
+            identities.propertysheet.getProperty('fullname', ''),
+            identities.propertysheet.getProperty('email', ''),
+        ])
+        self._index.indexdoc(docid, data)
 
     def _find(self, searchterm):
-        pass
+        result = sorted(
+            self._index.apply(searchterm),
+            key=itemgetter(1)
+        )
+        for docid, score in result:
+            yield self._userid_by_indexerid[docid]
 
     @security.private
     def lookup_identities(self, result):
