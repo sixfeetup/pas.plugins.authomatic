@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
+from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
 from operator import itemgetter
 from pas.plugins.authomatic.interfaces import IAuthomaticPlugin
@@ -11,9 +12,12 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PluggableAuthService.interfaces import plugins as pas_interfaces
 from Products.PluggableAuthService.interfaces.authservice import _noroles
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
+from zope.index.textindex import TextIndex
 from zope.interface import implementer
+
 import logging
 import os
+
 
 logger = logging.getLogger(__name__)
 tpl_dir = os.path.join(os.path.dirname(__file__), 'browser')
@@ -65,6 +69,10 @@ class AuthomaticPlugin(BasePlugin):
 
         # userid -> userdata
         self._useridentities_by_userid = OOBTree()
+
+        # indexerid -> userid
+        self._userid_by_indexerid = IOBTree()
+        self._textindex = TextIndex
 
     def _provider_id(self, result):
         """helper to get the provider identifier
