@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from Products.CMFPlone.utils import getFSVersionTuple
+
 import logging
 
-from Products.CMFPlone.utils import getFSVersionTuple
+
 logger = logging.getLogger('pas.plugins.authomatic')
 
 
