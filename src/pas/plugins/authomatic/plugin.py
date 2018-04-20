@@ -84,10 +84,10 @@ class AuthomaticPlugin(BasePlugin):
         """looks up the UserIdentities by using the provider name and the
         userid at this provider
         """
-        userid = self._userid_by_identityinfo.get(
-            self._provider_id(result),
-            None
-        )
+        provider_id = self._provider_id(result)
+        userid = self._userid_by_identityinfo.get(provider_id, None)
+        if not userid and len(provider_id) > 1:
+            userid = provider_id[1]
         return self._useridentities_by_userid.get(userid, None)
 
     @security.private
