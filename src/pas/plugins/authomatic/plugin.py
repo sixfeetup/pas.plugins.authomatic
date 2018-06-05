@@ -132,7 +132,7 @@ class AuthomaticPlugin(BasePlugin):
         # login (get new security manager)
         logger.info('Login User: {0}'.format(useridentities.userid))
 
-        if result.user.email.split('@')[1] != 'dominican.edu':
+        if 'dominican.edu' not in result.user.email.split('@')[1]:
             messages = IStatusMessage(self.REQUEST)
             messages.add(
                 u"Your email is not authorized for login access",
