@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from AccessControl import ClassSecurityInfo
+from AccessControl import ClassSecurityInfo, Unauthorized
 from App.class_init import InitializeClass
 from BTrees.OOBTree import OOBTree
 from operator import itemgetter
@@ -11,6 +11,7 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PluggableAuthService.interfaces import plugins as pas_interfaces
 from Products.PluggableAuthService.interfaces.authservice import _noroles
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
+from Products.statusmessages.interfaces import IStatusMessage
 from zope.interface import implementer
 
 import logging
@@ -130,6 +131,14 @@ class AuthomaticPlugin(BasePlugin):
 
         # login (get new security manager)
         logger.info('Login User: {0}'.format(useridentities.userid))
+
+        if result.user.email.split('@')[1] != 'dominican.edu':
+            messages = IStatusMessage(self.REQUEST)
+            messages.add(
+                u"Your email is not authorized for login access",
+                type=u"warning")
+            self.REQUEST.response.redirect('/')
+            raise Unauthorized
         aclu = api.portal.get_tool('acl_users')
         user = aclu._findUser(aclu.plugins, useridentities.userid)
         accessed, container, name, value = aclu._getObjectContext(
